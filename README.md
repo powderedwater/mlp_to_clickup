@@ -133,3 +133,50 @@ Use this before declaring a workflow release-ready:
   - [ ] Partial failures are handled and reported without silent data loss.
 - [ ] **Results reporting**
   - [ ] Final report includes created IDs/links, skipped rows, warnings, and failure reasons.
+
+## Publish downloadable installers on GitHub (beginner walkthrough)
+
+If you want non-technical users to install this app, publish **Release assets** (installers), not source code zip files.
+
+### One-time setup (15-20 minutes)
+
+1. **Push this repository to GitHub** (if you haven’t already).
+2. In GitHub, open **Settings → Actions → General** and ensure Actions are allowed.
+3. Confirm this file exists in your repo: `.github/workflows/release.yml`.
+4. (Optional but recommended) Update app identity in `src-tauri/tauri.conf.json`:
+   - `identifier`: use a reverse-domain style value you control (example: `com.yourcompany.mlptoclickup`).
+5. (Recommended) Add app icons and set `bundle.icon` in `src-tauri/tauri.conf.json`.
+
+### Create your first downloadable release
+
+1. On your machine, bump version numbers:
+   - `package.json` → `version`
+   - `src-tauri/tauri.conf.json` → `version`
+2. Commit and push those changes.
+3. Create and push a tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+4. In GitHub, open **Actions** and watch the `Release Desktop App` workflow.
+5. When all jobs finish, open **Releases**:
+   - A new **draft release** is created automatically.
+   - It includes OS-specific installers/bundles.
+6. Open the draft release, edit notes if you want, then click **Publish release**.
+
+Your users can now download installers directly from the GitHub Releases page.
+
+### Where files appear
+
+The workflow builds for:
+- Windows (`.msi`/`.exe` depending on bundle target)
+- macOS (`.dmg`/app bundle artifacts)
+- Linux (`.deb`/`.AppImage` where available)
+
+### Common first-time issues
+
+- **Linux build fails on missing system packages**: the workflow installs known Tauri dependencies automatically.
+- **macOS trust warnings**: expected until Apple signing/notarization is configured.
+- **“No release created”**: ensure you pushed a tag that starts with `v` (example: `v0.1.0`).
