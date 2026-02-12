@@ -67,14 +67,15 @@ export function parseExcelWorkbook(
 
   if (
     !(source instanceof ArrayBuffer) &&
-    !(source instanceof Uint8Array) &&
-    !Buffer.isBuffer(source)
+    !(source instanceof Uint8Array)
   ) {
     result.blockingErrors.push(
-      'Invalid input type for Excel parser. Expected ArrayBuffer, Uint8Array, or Buffer.',
+      'Invalid input type for Excel parser. Expected ArrayBuffer or Uint8Array.',
     );
     return result;
   }
+
+  const binarySource = source instanceof Uint8Array ? source : new Uint8Array(source);
 
   const headerDefaults: HeaderMappingDefaults = {
     ...DEFAULT_HEADERS,
@@ -87,7 +88,7 @@ export function parseExcelWorkbook(
     lectureType: options.headerRemap?.lectureType ?? headerDefaults.lectureType,
   };
 
-  const workbook = XLSX.read(source, { type: 'buffer' });
+  const workbook = XLSX.read(binarySource, { type: 'array' });
   const selectedSheetName = options.sheetName ?? workbook.SheetNames[0];
 
   if (!selectedSheetName || !workbook.Sheets[selectedSheetName]) {

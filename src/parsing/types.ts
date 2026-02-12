@@ -1,4 +1,4 @@
-export type ExcelSource = ArrayBuffer | Uint8Array | Buffer;
+export type ExcelSource = ArrayBuffer | Uint8Array;
 
 export interface HeaderMappingDefaults {
   videoNumber: string;

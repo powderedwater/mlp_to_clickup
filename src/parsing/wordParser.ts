@@ -19,18 +19,22 @@ export async function parseDocxTemplate(
 
   if (
     !(source instanceof ArrayBuffer) &&
-    !(source instanceof Uint8Array) &&
-    !Buffer.isBuffer(source)
+    !(source instanceof Uint8Array)
   ) {
     result.blockingErrors.push(
-      'Invalid input type for Word parser. Expected ArrayBuffer, Uint8Array, or Buffer.',
+      'Invalid input type for Word parser. Expected ArrayBuffer or Uint8Array.',
     );
     return result;
   }
 
+  const arrayBuffer =
+    source instanceof Uint8Array
+      ? source.buffer.slice(source.byteOffset, source.byteOffset + source.byteLength)
+      : source;
+
   try {
     const extraction = await mammoth.extractRawText({
-      buffer: Buffer.isBuffer(source) ? source : Buffer.from(source),
+      arrayBuffer,
     });
 
     const lines = extraction.value
